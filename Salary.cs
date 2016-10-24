@@ -40,7 +40,7 @@ namespace PayrollSystem
                 }
                 else
                 {
-                    throw new Exception("Hours worked must be positive");
+                    throw new Exception("Hours worked cannot be negative");
                 }
             }
         }
@@ -56,7 +56,7 @@ namespace PayrollSystem
                 }
                 else
                 {
-                    throw new Exception("Hourly rate must be positive");
+                    throw new Exception("Hourly rate cannot be negative");
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace PayrollSystem
                 }
                 else
                 {
-                    throw new Exception("Overtime hours must be positive");
+                    throw new Exception("Overtime hours cannot be negative");
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace PayrollSystem
                 }
                 else
                 {
-                    throw new Exception("Weekend hours must be positive");
+                    throw new Exception("Weekend hours cannot be negative");
                 }
             }
         }

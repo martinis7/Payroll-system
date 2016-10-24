@@ -16,7 +16,7 @@ namespace PayrollSystem
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // read employees from file
-            string fileName = @"C:\Users\Martynas\Documents\Visual Studio 2015\Projects\PayrollSystem\Employees.txt";
+            string fileName = "test.txt";
             List<Employee> employeesList = GetEmployeesFromFile(fileName);
 
             // command-line interface
