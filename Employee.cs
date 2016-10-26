@@ -5,15 +5,15 @@ using System.Text.RegularExpressions;
 namespace PayrollSystem
 {
 
-    public class Employee : IComparable<Employee>
+    public class Employee
     {
         private const int IdLength = 5;
         private int _id;
-        internal string _name { get; set; }
+        public string _name { get; set; }
         private string _gender { get; set; }
         private string _email;
-        internal int _departmentID { get; set; }
-        internal WorkHours _salary { get; set; }
+        public int _departmentID { get; set; }
+        public WorkHours _salary { get; set; }
 
         Regex emailRegex = new Regex(@"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@"
                                         + @"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?
@@ -58,14 +58,14 @@ namespace PayrollSystem
             this.Email = Email;
         }
 
+        public Employee()
+        {
+
+        }
+
         public override string ToString()
         {
             return "ID: " + _id + ", Name: " + _name + ", Gender: " + _gender + ", Overtime: " + (_salary.OvertimeHours) + _salary.ToString();
-        }
-
-        int IComparable<Employee>.CompareTo(Employee other)
-        {
-            return this._name.CompareTo(other._name);
         }
     }
 }

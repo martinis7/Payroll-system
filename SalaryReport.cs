@@ -8,45 +8,28 @@ namespace PayrollSystem
 {
     public class SalaryReport
     {
-        private decimal salarySum;
-        private int overtimeSum;
+        public decimal salarySum { get; set; }
+        public int overtimeSum {get;set;}
+        public int count { get; set; }
 
-        public decimal SalarySum
+        public SalaryReport()
         {
-            get
-            {
-                return SalarySum;
-            }
 
-            set
-            {
-                SalarySum = value;
-            }
+        }
+        public SalaryReport(decimal salarySum, int overtimeSum, int count)
+        {
+            this.salarySum = salarySum;
+            this.overtimeSum = overtimeSum;
+            this.count = count;
         }
 
-        public int OvertimeSum
+        public SalaryReport Add(decimal salary, int overtime)
         {
-            get
-            {
-                return overtimeSum;
-            }
-
-            set
-            {
-                overtimeSum = value;
-            }
-        }
-
-        public SalaryReport Add(SalaryReport reportToAdd)
-        {
-            SalarySum += reportToAdd.SalarySum;
-            overtimeSum += reportToAdd.overtimeSum;
-            return this;
-        }
-
-        public override string ToString()
-        {
-            return "\t\t\t\tOvertime sum: " + overtimeSum + " Salary sum: " + salarySum.ToString("C2");
+            SalaryReport report = new SalaryReport();
+            report.salarySum = this.salarySum + salary;
+            report.overtimeSum = this.overtimeSum + overtime;
+            report.count = count + 1;
+            return report;
         }
     }
 }

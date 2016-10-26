@@ -4,7 +4,7 @@ namespace PayrollSystem
 {
 
     [Flags]
-    public enum SalaryFeatures
+    public enum WorkFeatures
     {
         None = 0,
         Graduate = 1,
@@ -21,7 +21,7 @@ namespace PayrollSystem
         private const int childrenBonus = 200;
         private const int disabilityBonus = 150;
 
-        private SalaryFeatures features { get; set; }
+        private WorkFeatures features { get; set; }
 
         private int hoursWorked;
         private decimal hourlyRate;
@@ -103,7 +103,7 @@ namespace PayrollSystem
             get { return overtimeRate; }
         }
 
-        public WorkHours(decimal hourlyRate, int hoursWorked, int overtimeHours, int weekendHours, SalaryFeatures features)
+        public WorkHours(decimal hourlyRate, int hoursWorked, int overtimeHours, int weekendHours, WorkFeatures features)
         {
             this.hourlyRate = hourlyRate;
             this.hoursWorked = hoursWorked;
@@ -124,9 +124,9 @@ namespace PayrollSystem
             salary += (WeekendRate * hourlyRate) * WeekendHours;
 
             // bonus for various features
-            if (features.HasFlag(SalaryFeatures.Graduate)) salary += graduateBonus;
-            if (features.HasFlag(SalaryFeatures.Children)) salary += childrenBonus;
-            if (features.HasFlag(SalaryFeatures.Disability)) salary += disabilityBonus;
+            if (features.HasFlag(WorkFeatures.Graduate)) salary += graduateBonus;
+            if (features.HasFlag(WorkFeatures.Children)) salary += childrenBonus;
+            if (features.HasFlag(WorkFeatures.Disability)) salary += disabilityBonus;
 
             return salary;
         }
@@ -139,15 +139,6 @@ namespace PayrollSystem
         public decimal OffTimeSalary()
         {
             return overtimeHours * (hourlyRate * overtimeRate) + weekendHours * (hourlyRate * weekendRate);
-        }
-
-    }
-
-    public static class SalaryHelper
-    {
-        public static decimal OffTimeSalary(this WorkHours salary)
-        {
-            return salary.OffTimeSalary();
         }
     }
 }

@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace PayrollSystem
 {
+    public class CompareByName : IComparer<Employee>
+    {
+        int IComparer<Employee>.Compare(Employee x, Employee y)
+        {
+            return x._name.CompareTo(y._name);
+        }
+    }
+
     public class CompareByID : IComparer<Employee>
     {
         int IComparer<Employee>.Compare(Employee x, Employee y)
