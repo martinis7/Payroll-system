@@ -9,11 +9,11 @@ namespace PayrollSystem
     {
         private const int IdLength = 5;
         private int _id;
-        private string _name;
+        internal string _name { get; set; }
         private string _gender { get; set; }
         private string _email;
-        public int _departmentID { get; set; }
-        private Salary _salary;
+        internal int _departmentID { get; set; }
+        internal WorkHours _salary { get; set; }
 
         Regex emailRegex = new Regex(@"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@"
                                         + @"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?
@@ -48,31 +48,19 @@ namespace PayrollSystem
             }
         }
 
-        internal Salary Salary
-        {
-            get { return _salary; }
-            set { _salary = value; }
-        }
-
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
-
-        public Employee(int ID, string Name, string Gender, int departmentID, Salary salary, string Email = "abc@abc.lt")
+        public Employee(int ID, string Name, string Gender, int departmentID, WorkHours salary, string Email = "abc@abc.lt")
         {
             this.Id = ID;
             _name = Name;
             _gender = Gender;
             _departmentID = departmentID;
-            this.Email = Email;
             _salary = salary;
+            this.Email = Email;
         }
 
         public override string ToString()
         {
-            return "ID: " + _id + ", Name: " + _name + ", Gender: " + _gender + ", Overtime: " + (this._salary.OvertimeHours) + Salary.ToString();
+            return "ID: " + _id + ", Name: " + _name + ", Gender: " + _gender + ", Overtime: " + (_salary.OvertimeHours) + _salary.ToString();
         }
 
         int IComparable<Employee>.CompareTo(Employee other)

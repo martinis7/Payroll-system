@@ -16,19 +16,17 @@ namespace PayrollSystem
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // read employees from file
-            string fileName = "test.txt";
+            string fileName = @"C:\Users\Martynas\Documents\Visual Studio 2015\Projects\PayrollSystem\Employees.txt";
             List<Employee> employeesList = GetEmployeesFromFile(fileName);
 
             // command-line interface
-            Console.WriteLine("Sveiki, atvykę į atlyginimų mokėjimo sistemą!");
             int input;
-            bool run = true;
-            while (run)
+            Console.WriteLine("Sveiki, atvykę į atlyginimų mokėjimo sistemą!");
+            do
             {
                 Console.WriteLine("Pasirinkite veiksmą:\n1.Išvesti visus darbuotojus\n2.Surasti darbuotoją pagal vardą\n3.Suriušiuoti darbuotojus pagal kriterijų\n4.Gauti darbuotojo viršvalandžių atlyginimą\n5.Sugrupuoti pagal departamentą\n6.Baigti darbą");
                 int.TryParse(Console.ReadLine(), out input);
-                MenuChoice(input, ref run, employeesList);
-            }
+            } while (MenuChoice(input, employeesList));
         }
 
         public static List<Employee> GetEmployeesFromFile(string fileName)
@@ -38,30 +36,48 @@ namespace PayrollSystem
             string[] allLines = System.IO.File.ReadAllLines(fileName);
             foreach (string emp in allLines)
             {
-                employeesList.Add(CreateEmployee(emp));
+                employeesList.Add(ParseEmployee(emp));
             }
             return employeesList;
         }
 
-        public static Employee CreateEmployee(string line)
+        public static Employee ParseEmployee(string line)
         {
             string[] fields = line.Split(' ');
-            int ID = int.Parse(fields[0]);
+            string errorMsg = " yra netinkamo formato. Skaičiavimai gali būti nekorektiški";
+            int ID;
             int departmentId;
-            int.TryParse(fields[3], out departmentId);
             decimal rate;
-            decimal.TryParse(fields[5], out rate);
             int hours;
-            int.TryParse(fields[6], out hours);
             int oHours;
-            int.TryParse(fields[7], out oHours);
             int wHours;
-            int.TryParse(fields[8], out wHours);
-            SalaryFeatures features = GetFeaturesByString(line);
-            return new Employee(ID, fields[1], fields[2], departmentId, salary: new Salary(rate, hours, oHours, wHours, features), Email: fields[4]);
+
+            int.TryParse(fields[0], out ID);
+            if (!int.TryParse(fields[3], out departmentId))
+            {
+                Console.WriteLine("Departamento ID" + errorMsg);
+            }
+            if (!decimal.TryParse(fields[5], out rate))
+            {
+                Console.WriteLine("Valandinis koeficientas" + errorMsg);
+            }
+            if (!int.TryParse(fields[6], out hours))
+            {
+                Console.WriteLine("Pradirbtos valandos" + errorMsg);
+            }
+            if (!int.TryParse(fields[7], out oHours))
+            {
+                Console.WriteLine("Viršvalandžiai" + errorMsg);
+            }
+            if (!int.TryParse(fields[8], out wHours))
+            {
+                Console.WriteLine("Išeiginių valandos" + errorMsg);
+            }
+            SalaryFeatures features = ParseFeatures(line);
+            return new Employee(ID, fields[1], fields[2], departmentId, salary: new WorkHours(rate, hours, oHours, wHours, features), Email: fields[4]);
         }
 
-        public static SalaryFeatures GetFeaturesByString(string fields)
+        public static SalaryFeatures ParseFeatures(string fields)
         {
             SalaryFeatures features = SalaryFeatures.None;
 
@@ -72,75 +88,82 @@ namespace PayrollSystem
             return features;
         }
 
-        public static void MenuChoice(int input, ref bool run, List<Employee> employeesList)
+        public static bool MenuChoice(int input, List<Employee> employeesList)
         {
             switch (input)
             {
                 case 1:
                     PrintEmployees(employeesList);
-                    break;
+                    return true;
                 case 2:
                     FindByNameAndPrint(employeesList);
-                    break;
+                    return true;
                 case 3:
                     SortEmployees(employeesList);
-                    break;
+                    return true;
                 case 4:
                     GetOfftimeSalary(employeesList);
-                    break;
+                    return true;
                 case 5:
                     GroupEmployeesByDepartment(employeesList);
-                    break;
+                    return true;
                 case 6:
-                    run = false;
-                    break;
+                    return false;
                 default:
                     Console.WriteLine("Nepavyko apdoroti pasirinkimo, bandykite iš naujo");
-                    break;
+                    return true;
             }
         }
 
         public static void PrintEmployees(IEnumerable<Employee> List)
         {
-            foreach (Employee emp in List)
+            if (!List.Any()) Console.WriteLine("Darbuotojų sąrašas tuščias");
+            else
             {
-                Console.WriteLine(emp);
+                foreach (Employee emp in List)
+                {
+                    Console.WriteLine(emp);
+                }
             }
+        }
+
+        public static IEnumerable<Employee> FindByname(List<Employee> employeesList)
+        {
+            Console.WriteLine("Įveskite darbuotojo vardą ar jo dalį:");
+            string name = Console.ReadLine();
+            IEnumerable<Employee> exactEmployee = from Employee in employeesList
+                                             where Employee._name.ToLower().Contains(name.ToLower())
+                                             select Employee;
+            return exactEmployee;
         }
 
         public static void FindByNameAndPrint(List<Employee> employeesList)
         {
-            Console.WriteLine("Įveskite darbuotojo vardą:");
-            string name = Console.ReadLine();
-            IEnumerable<Employee> exactEmp = from Employee in employeesList
-                                             where Employee.Name.ToLower().Contains(name.ToLower())
-                                             select Employee;
-            PrintEmployees(exactEmp);
-            if (!exactEmp.Any()) Console.WriteLine("Darbuotojas neegzistuoja arba įvestas neteisingas vardas");
+           
+            PrintEmployees(FindByname(employeesList));
         }
 
         public static void SortEmployees(List<Employee> employeesList)
         {
             Console.WriteLine("Pasirinkite rūšiavimo kriterijų:");
             Console.WriteLine("1.Vardas 2.ID 3. Atlyginimas 4.Viršvalandžiai");
-            int sort = int.Parse(Console.ReadLine());
-            SmartEmployeeComparer scc = new SmartEmployeeComparer();
+
+            int sort;
+            int.TryParse(Console.ReadLine(), out sort);
+
             switch (sort)
             {
                 case 1:
                     employeesList.Sort();
                     break;
                 case 2:
-                    scc.SortBy = SmartEmployeeComparer.CompareField.Id;
-                    employeesList.Sort(scc);
+                    employeesList.Sort(new CompareByID());
                     break;
                 case 3:
-                    scc.SortBy = SmartEmployeeComparer.CompareField.Salary;
-                    employeesList.Sort(scc);
+                    employeesList.Sort(new CompareBySalary());
                     break;
                 case 4:
-                    scc.SortBy = SmartEmployeeComparer.CompareField.Overtime;
-                    employeesList.Sort(scc);
+                    employeesList.Sort(new CompareByOvertime());
                     break;
                 default:
                     Console.WriteLine("Nepavyko apdoroti pasirinkimo, bandykite iš naujo");
@@ -150,22 +173,10 @@ namespace PayrollSystem
 
         public static void GetOfftimeSalary(List<Employee> employeesList)
         {
-            Console.WriteLine("Įveskite darbuotojo vardą:");
-            string empName = Console.ReadLine();
-            IEnumerable<Employee> exactemployee = from Employee in employeesList
-                                           where Employee.Name.ToLower().Contains(empName.ToLower())
-                                           select Employee;
-            if (exactemployee.Any())
-            {
-                foreach (Employee emp in exactemployee)
+                foreach (Employee emp in FindByname(employeesList))
                 {
-                    Console.WriteLine(emp.Name + " atlyginimo dalis, gauta dirbant viršvalandžius: " + emp.Salary.OffTimeSalary().ToString("C2"));
+                    Console.WriteLine(emp._name + " atlyginimo dalis, gauta dirbant viršvalandžius: " + emp._salary.OffTimeSalary().ToString("C2"));
                 }
-            }
-            else
-            {
-                Console.WriteLine("Darbuotojas neegzistuoja arba ivestas neteisingas vardas");
-            }
         }
 
         public static void GroupEmployeesByDepartment(List<Employee> employeesList)
@@ -179,19 +190,22 @@ namespace PayrollSystem
                                                                Department = department,
                                                                Employees = employees
                                                            });
-
+            //cia galima paprastinti koda. pvz, mes sumuojame cia 2 dalykus
+            //padarom klase su 2 properciais, galime ja pvz pavadint SalaryReport
+            //defininam jai metoda Add, kuris susumuoja this ir paduota kita SalaryReport
+            //bei grazina susumuota. Per pratybas tuomet parodysiu kaip pakeist vidini foreach loopa 1 eilute 
             foreach (var department in employeesByDepartment)
             {
                 decimal salarySum = 0;
                 int overtimeSum = 0;
                 int i = 0;
-
                 Console.WriteLine(department.Department.Name);
+
                 foreach (var emp in department.Employees)
                 {
                     Console.WriteLine(" " + emp);
-                    salarySum += emp.Salary.CountAllSalary();
-                    overtimeSum += emp.Salary.OvertimeHours;
+                    salarySum += emp._salary.CountAllSalary();
+                    overtimeSum += emp._salary.OvertimeHours;
                     i++;
                 }
                 if (i == 0) Console.WriteLine("Šiame departamente nerastas nei vienas darbuotojas");

@@ -12,7 +12,7 @@ namespace PayrollSystem
         Disability = 4
     }
 
-    public struct Salary
+    public struct WorkHours
     {
         // constants could be modified when using the system
         private const decimal weekendRate = 2.02M;
@@ -95,15 +95,15 @@ namespace PayrollSystem
 
         public static decimal WeekendRate
         {
-            get {return weekendRate;}
+            get { return weekendRate; }
         }
 
         public static decimal OvertimeRate
         {
-            get {return overtimeRate; }
+            get { return overtimeRate; }
         }
 
-        public Salary(decimal hourlyRate, int hoursWorked, int overtimeHours, int weekendHours, SalaryFeatures features)
+        public WorkHours(decimal hourlyRate, int hoursWorked, int overtimeHours, int weekendHours, SalaryFeatures features)
         {
             this.hourlyRate = hourlyRate;
             this.hoursWorked = hoursWorked;
@@ -116,7 +116,7 @@ namespace PayrollSystem
         {
             // base payment
             decimal salary = HourlyRate * HoursWorked;
-            
+
             // overtime payment
             salary += (OvertimeRate * hourlyRate) * OvertimeHours;
 
@@ -145,7 +145,7 @@ namespace PayrollSystem
 
     public static class SalaryHelper
     {
-        public static decimal OffTimeSalary(this Salary salary)
+        public static decimal OffTimeSalary(this WorkHours salary)
         {
             return salary.OffTimeSalary();
         }
