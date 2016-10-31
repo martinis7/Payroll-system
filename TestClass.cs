@@ -46,6 +46,12 @@ namespace PayrollSystem
         {
             string[] fields = line.Split(' ');
             string errorMsg = " yra netinkamo formato. Darbuotojas nebus sukurtas.";
+            if (fields.Length < 9)
+            {
+                employee = new Employee();
+                Console.WriteLine("Pateikta informacija" + errorMsg);
+                return false;
+            }          
             bool parseCondition = true;
             int ID;
             int departmentId;
@@ -209,11 +215,6 @@ namespace PayrollSystem
                 {
                     Console.WriteLine(" " + emp);
                     salarySum = salarySum.Add(emp._salary.CountAllSalary(), emp._salary.OvertimeHours);
-                }
-
-                foreach (var emp in department.Employees)
-                {
-                    Console.WriteLine(" " + emp);
                 }
 
                 if (salarySum.count != 0)
