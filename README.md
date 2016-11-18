@@ -1,2 +1,2 @@
 # Payroll-system
-Simple payroll system with command-line interface
+Simple payroll system with command-line interface (Lithuanian language)
